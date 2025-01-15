@@ -1,7 +1,7 @@
 resource "aws_security_group" "jenkins_sg" {
   name        = "jenkins-sg"
   description = "Security group for Jenkins and build node"
-
+  vpc_id      = aws_vpc.ci_cd_vpc.id
   ingress {
     from_port   = 22
     to_port     = 22
@@ -40,7 +40,7 @@ resource "aws_security_group" "jenkins_sg" {
 resource "aws_security_group" "rds-sg" {
   name        = "rds-sg"
   description = "Allow RDS access"
-
+  vpc_id      = aws_vpc.ci_cd_vpc.id
   ingress {
     from_port   = 5432
     to_port     = 5432
