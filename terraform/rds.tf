@@ -1,22 +1,39 @@
-# RDS PostgreSQL instance
-resource "aws_db_instance" "postgres" {
-  allocated_storage    = 20                     # Storage size in GB
-  engine               = "postgres"             # Database engine
-#  engine_version       = "13.4"                 # PostgreSQL version (example)
-  instance_class       = "db.t3.micro"          # Change instance type as needed
-  db_name              = "mydatabase"           # Database name
-  username             = "postgres"                # Database admin username
-  password             = "password"             # Database admin password (set securely)
-#  parameter_group_name = "default.postgres13"   # Parameter group for PostgreSQL
-  skip_final_snapshot  = true                   # Set to false in production
-  publicly_accessible  = true                   # Set to false for private access
+# ----------------------------------------------------
+# RDS
+# ----------------------------------------------------
 
-  vpc_security_group_ids = [aws_security_group.rds-sg.id]
+resource "aws_db_instance" "postgres" {
+
+  allocated_storage    = 20
+  engine               = "postgres"
+  instance_class       = "db.t3.micro"
+  db_name              = var.aws_rds_db
+  username             = var.db_user
+  password             = var.db_password
+  skip_final_snapshot  = true
+  publicly_accessible  = true
+
+  vpc_security_group_ids = [aws_security_group.rds_sg.id]
+  db_subnet_group_name = aws_db_subnet_group.rds_subnet_group.id
 
   tags = {
-    Name = "my-postgresql-db"
+    Name = "RDS DevOps"
+  }
+
+}
+
+resource "aws_db_subnet_group" "rds_subnet_group" {
+  name       = "main"
+  subnet_ids = [aws_subnet.ci_cd_subnet_1.id, aws_subnet.ci_cd_subnet_1.id]
+
+  tags = {
+    Name = "DB subnet group"
   }
 }
+
+# ----------------------------------------------------
+# outputs
+# ----------------------------------------------------
 
 output "db_endpoint" {
   description = "RDS Endpoint"
