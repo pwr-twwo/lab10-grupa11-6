@@ -1,5 +1,5 @@
 resource "aws_instance" "build_node" {
-  ami           = "ami-0c02fb55956c7d316" # Ubuntu 20.04
+  ami           = "ami-0866a3c8686eaeeba"
   instance_type = "t2.micro"
   key_name      = "vockey"
   security_groups = [aws_security_group.jenkins_sg.name]
@@ -17,7 +17,6 @@ resource "aws_instance" "build_node" {
     sudo usermod -aG docker ubuntu
   EOF
 }
-
 
 
 output "build_node_public_ip" {
