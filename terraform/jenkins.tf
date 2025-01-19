@@ -1,6 +1,6 @@
 resource "aws_instance" "jenkins" {
   ami           = "ami-0c02fb55956c7d316"
-  instance_type = "t2.micro"
+  instance_type = "t2.small"
   key_name      = "vockey"
   security_groups = [aws_security_group.jenkins_sg.name]
 

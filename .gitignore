@@ -1,2 +1,5 @@
 /.idea/
 /lab10.iml
+*.tfstate*
+*.lock*
+terraform/
