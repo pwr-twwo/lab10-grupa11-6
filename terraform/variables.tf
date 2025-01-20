@@ -26,3 +26,19 @@ variable "db_password" {
     type = string
     description = "db's user password"
 }
+
+
+
+# ----------------------------------------------------
+# ECR vars
+# ----------------------------------------------------
+
+variable "aws_ecr_be_repo_name" {
+    type = string
+
+}
+
+variable "aws_ecr_client_id" {
+    type = string
+
+}

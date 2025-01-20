@@ -20,11 +20,13 @@ resource "aws_db_instance" "postgres" {
     Name = "RDS DevOps"
   }
 
+  depends_on = [aws_internet_gateway.igw]
+
 }
 
 resource "aws_db_subnet_group" "rds_subnet_group" {
   name       = "main"
-  subnet_ids = [aws_subnet.ci_cd_subnet_1.id, aws_subnet.ci_cd_subnet_1.id]
+  subnet_ids = [aws_subnet.ci_cd_subnet_1.id, aws_subnet.ci_cd_subnet_2.id]
 
   tags = {
     Name = "RDS DB subnet group"
@@ -37,28 +39,32 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
 # ----------------------------------------------------
 
 resource "terraform_data" "tables" {
-  depends_on [
+  depends_on = [
     aws_db_instance.postgres
   ]
   provisioner "local-exec" {
     working_dir = "../database/"
     command = <<EOT
-    PGPASSWORD="${var.db_password}" 
-    psql -h ${aws_db_instance.rds_instance.address} -U ${var.db_username} -d ${var.db_name} -f create_tables.sql
+    psql -h ${aws_db_instance.postgres.address} -U ${var.db_user} -d ${var.aws_rds_db} -f create_tables.sql
     EOT
+    environment = {
+          PGPASSWORD = "${var.db_password}" 
+        }
   }
 }
 
 resource "terraform_data" "records" {
-  depends_on [
+  depends_on = [
     terraform_data.tables
   ]
   provisioner "local-exec" {
     working_dir = "../database/"
     command = <<EOT
-    PGPASSWORD="${var.db_password}" 
-    psql -h ${aws_db_instance.rds_instance.address} -U ${var.db_username} -d ${var.db_name} -f init_database.sql
+    psql -h ${aws_db_instance.postgres.address} -U ${var.db_user} -d ${var.aws_rds_db} -f init_database.sql
     EOT
+    environment = {
+          PGPASSWORD = "${var.db_password}" 
+        }
   }
 }
 
