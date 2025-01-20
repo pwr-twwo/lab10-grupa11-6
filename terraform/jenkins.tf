@@ -2,9 +2,6 @@
 # EC2 Jekins Controller
 # ----------------------------------------------------
 
-
-
-
 resource "aws_instance" "jenkins" {
 
   ami           = "ami-04b4f1a9cf54c11d0"
