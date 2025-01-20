@@ -15,10 +15,10 @@ resource "aws_instance" "build_node" {
     sudo apt update -y
     sudo apt upgrade -y
 
-    sudo apt install -y openjdk-11-jdk curl unzip jq
+    sudo apt install -y openjdk-17-jdk curl unzip jq
 
-    #docker przez apt (inaczej niż przez snap -> można uruchomić demona w systemctl)
-    sudo apt-get install docker.io
+    #docker przez apt (inaczej niż przez snap..)
+    sudo apt-get install docker.io -y
 
     # Install AWS CLI - required for pushing to ecr (login beforehand, i think...) 
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
