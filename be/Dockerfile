@@ -17,7 +17,7 @@ COPY --from=build /build/target/*.jar /app/kino.jar
 ENV DB_ENDPOINT=${DB_ENDPOINT}
 ENV DB_USER=${DB_USER}
 ENV DB_PASSWORD=${DB_PASSWORD}
-
+ENV DB_NAME=${DB_NAME}
 ENV PROFILE=${APP_PROFILE}
 
 #CMD java -jar kino.jar --spring.active.profile=${PROFILE}
