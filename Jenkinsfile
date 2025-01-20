@@ -31,7 +31,6 @@ pipeline {
         stage('Deploy to ECS') {
             steps {
                 sh '''
-                
                 aws ecs update-service --cluster app-cluster --service app-service --force-new-deployment
                 '''
             }
