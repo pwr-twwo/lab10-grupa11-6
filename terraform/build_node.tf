@@ -1,22 +1,55 @@
+# ----------------------------------------------------
+# EC2 Build Node - Jenkins Agent
+# ----------------------------------------------------
+
+
 resource "aws_instance" "build_node" {
-  ami           = "ami-0866a3c8686eaeeba"
+  ami           = "ami-04b4f1a9cf54c11d0" #z instancji ec2
   instance_type = "t2.micro"
-  key_name      = "vockey"
-  security_groups = [aws_security_group.jenkins_sg.name]
+  key_name      = aws_key_pair.jenkins_key.key_name
+  vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
+  subnet_id = aws_subnet.ci_cd_subnet_1.id
+
+  user_data = <<-EOF
+    #!/bin/bash
+    sudo apt update -y
+    sudo apt upgrade -y
+
+    sudo apt install -y openjdk-11-jdk curl unzip jq
+
+    #docker przez apt (inaczej niż przez snap -> można uruchomić demona w systemctl)
+    sudo apt-get install docker.io
+
+    # Install AWS CLI - required for pushing to ecr (login beforehand, i think...) 
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    sudo ./aws/install --update
+    rm -rf awscliv2.zip aws
+
+    echo "AWS CLI version"
+    aws --version
+
+    # Start and enable Docker
+    sudo systemctl start docker
+    sudo systemctl enable docker
+    sudo usermod -aG docker ubuntu
+
+    echo "--- jenkins agent - build node configured. ---"
+
+  EOF
 
   tags = {
     Name = "Build Node"
   }
 
-  user_data = <<-EOF
-    #!/bin/bash
-    sudo apt update -y
-    sudo apt install -y docker.io
-    sudo systemctl start docker
-    sudo systemctl enable docker
-    sudo usermod -aG docker ubuntu
-  EOF
+
+  depends_on = [aws_internet_gateway.igw]
 }
+
+
+# ----------------------------------------------------
+# outputs
+# ----------------------------------------------------
 
 
 output "build_node_public_ip" {
