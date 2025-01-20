@@ -27,9 +27,41 @@ resource "aws_db_subnet_group" "rds_subnet_group" {
   subnet_ids = [aws_subnet.ci_cd_subnet_1.id, aws_subnet.ci_cd_subnet_1.id]
 
   tags = {
-    Name = "DB subnet group"
+    Name = "RDS DB subnet group"
   }
 }
+
+
+# ----------------------------------------------------
+# skrypty do bazy
+# ----------------------------------------------------
+
+resource "terraform_data" "tables" {
+  depends_on [
+    aws_db_instance.postgres
+  ]
+  provisioner "local-exec" {
+    working_dir = "../database/"
+    command = <<EOT
+    PGPASSWORD="${var.db_password}" 
+    psql -h ${aws_db_instance.rds_instance.address} -U ${var.db_username} -d ${var.db_name} -f create_tables.sql
+    EOT
+  }
+}
+
+resource "terraform_data" "records" {
+  depends_on [
+    terraform_data.tables
+  ]
+  provisioner "local-exec" {
+    working_dir = "../database/"
+    command = <<EOT
+    PGPASSWORD="${var.db_password}" 
+    psql -h ${aws_db_instance.rds_instance.address} -U ${var.db_username} -d ${var.db_name} -f init_database.sql
+    EOT
+  }
+}
+
 
 # ----------------------------------------------------
 # outputs
