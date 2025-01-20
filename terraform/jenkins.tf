@@ -19,23 +19,33 @@ resource "aws_instance" "jenkins" {
 
   #  user_data = file("user_data/jenkins.sh")
 
-  #user_data = <<-EOF
-  #  #!/bin/bash
-  #  sudo apt update -y
-  #  sudo apt install -y openjdk-17-jdk jq
+  user_data = <<-EOF
+    #!/bin/bash
+    sudo apt update -y
+    sudo apt install -y openjdk-17-jdk jq
+
+
+    # Install AWS CLI 
+    curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+    unzip awscliv2.zip
+    sudo ./aws/install --update
+    rm -rf awscliv2.zip aws
+
+    echo "AWS CLI version"
+    aws --version
 
     # JENKINS
-  #  sudo wget -q -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io.key
-  #  echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
-  #  sudo apt update -y
+    sudo wget -q -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io.key
+    echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+    sudo apt update -y
 
-  #  sudo apt install -y jenkins
-  #  sudo systemctl start jenkins
-  #  sudo systemctl enable jenkins
+    sudo apt install -y jenkins
+    sudo systemctl start jenkins
+    sudo systemctl enable jenkins
 
-  #  echo "--- jenkins server configured. ---"
+    echo "--- jenkins server configured. ---"
 
-  #EOF
+  EOF
 
     tags = {
     Name = "Jenkins Controller Server"
