@@ -1,38 +1,22 @@
 pipeline {
-    agent { label 'Docker-Node' }
+    agent any
     environment {
-        ECR_REPO_URI = "<your_account_id>.dkr.ecr.us-east-1.amazonaws.com/my-app"
         REGION = "us-east-1"
+        ECR_REPO_NAME = "REPO"
     }
     stages {
-        stage('Clone Repository') {
+        stage('Build stage') {
+            agent { label 'BUILD' }
             steps {
-                git branch: 'main', url: 'https://github.com/pwr-twwo/lab10-grupa11-6.git'
+                sh 'echo "${REGION}"'
+                sh 'echo "test"'
             }
         }
-        stage('Build Docker Image') {
+
+        stage("Deploy stage"){
+            agent { label 'Built-In Node' } 
             steps {
-                sh 'docker build -t my-app .'
-            }
-        }
-        stage('Tag Image') {
-            steps {
-                sh 'docker tag my-app $ECR_REPO_URI:latest'
-            }
-        }
-        stage('Push to ECR') {
-            steps {
-                sh '''
-                aws ecr get-login-password --region $REGION | docker login --username AWS --password-stdin $ECR_REPO_URI
-                docker push $ECR_REPO_URI:latest
-                '''
-            }
-        }
-        stage('Deploy to ECS') {
-            steps {
-                sh '''
-                aws ecs update-service --cluster app-cluster --service app-service --force-new-deployment
-                '''
+                sh 'echo "adresURL:${REPO_NAME}" '
             }
         }
     }
