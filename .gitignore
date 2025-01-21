@@ -2,5 +2,4 @@
 /lab10.iml
 *.tfstate*
 *.lock*
-./.terraform/
 *.tfvars
