@@ -45,27 +45,23 @@ Rozwiązaniem było wygenerowanie klucza za pomocą komendy: ssh-keygen -t rsa -
 ## 1. Utwórz instancję ECR
 Rozpocznij od utworzenia Amazon Elastic Container Registry (ECR), które będzie przechowywało obrazy Docker.
 
----
 
 ## 2. Uruchom `terraform apply`
 Wykonaj komendę `terraform apply`, uzupełniając dane dotyczące ECR.
 
----
 
 ## 3. Uruchom aplikację Jenkins
 Po zakończeniu działania Terraform uruchom aplikację Jenkins, która została utworzona w procesie.
 
----
 
 ## 4. Zdefiniuj `node Build`
 Utwórz w Jenkinsie node o nazwie `Build`, który łączy się do maszyny budującej.
-
----
+Przy tworzeniu node dla maszyny budującej w Jenkins wybraliśmy
+Host Key Verification Strategy = Non verifying Verification Strategy
 
 ## 5. Zdefiniuj `node Built-In`
 Utwórz w Jenkinsie node o nazwie `Built-In`, który łączy się do maszyny, na której będzie deployowana aplikacja.
 
----
 
 ## 6. Zdefiniuj nowy Job typu Pipeline
 1. W Jenkinsie utwórz nowy Job typu **Pipeline**.
@@ -74,7 +70,6 @@ Utwórz w Jenkinsie node o nazwie `Built-In`, który łączy się do maszyny, na
    - **GitHub hook trigger for GITScm polling**.
 3. Ustaw konfigurację pipeline jako **Pipeline script from SCM**.
 
----
 
 ## 7. Utwórz webhook w repozytorium
 1. W repozytorium GitHub dodaj webhooka.
@@ -97,11 +92,25 @@ Utwórz w Jenkinsie node o nazwie `Built-In`, który łączy się do maszyny, na
 # Problemy przy implementacji
 
 ### 1. Shell w Jenkinsfile
-Podczas definiowania komend w Jenkinsfile okazało się, że komendy AWS muszą być wykonywane w wielolinijkowy sposób. Przykład poprawnego użycia:
+Podczas tworzenia komend shellowych w krokach Jenkinsfile'a bardzo czasochłonne było zdiagnozowanie, że komendy aws'owe muszą być wykonywane w wielolinijkowy sposób. Na przykład tak:
 
 ```bash
 sh '''
 aws --version
 aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_REPO_USER_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
 '''
+```
+## 2. Generowanie kluczy w Terraform
 
+Podczas tworzenia maszyn na początku użyliśmy generowania kluczy przy pomocy terraforma w taki sposób, co sprawiło dużo problemów z połączeniem. Problematyczny kod:
+
+```hcl
+resource "tls_private_key" "example" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
+}
+
+resource "aws_key_pair" "jenkins_key" {
+  key_name   = "jenkins-key"
+  public_key = tls_private_key.example.public_key_openssh
+}
