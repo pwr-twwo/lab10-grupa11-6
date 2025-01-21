@@ -55,7 +55,7 @@ pipeline {
                     ls
                 '''
 
-                sh 'cat current-task-definition'
+                sh 'cat current-task-definition.json'
 
                 sh '''
                 echo "Updating image in task definition..."
