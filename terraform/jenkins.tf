@@ -21,9 +21,9 @@ resource "aws_instance" "jenkins" {
   user_data = <<-EOF
     #!/bin/bash
     sudo apt update -y
-    sudo apt install -y openjdk-17-jdk jq unizp curl
+    sudo apt upgrade -y
+    sudo apt install -y openjdk-17-jdk curl unzip jq
 
-    # Install AWS CLI 
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
     unzip awscliv2.zip
     sudo ./aws/install --update
