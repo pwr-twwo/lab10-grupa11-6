@@ -74,4 +74,4 @@ resource "aws_key_pair" "jenkins_key" {
 }
 ```
 ## 3. Hostowanie statycznego frontendu na S3Bucket
-Problemem było połączenie się ze strony hostowanej na S3Bucket do naszego backendu, który obsługiwał tylko HTTP. Rozwiązaniem było zdefniowanie polityk i obsługa CORS na backendzie.
+Problemem było połączenie się ze strony hostowanej na S3Bucket do naszego backendu, który obsługiwał tylko HTTP. Rozwiązaniem było zdefniowanie polityk, obsługa CORS na backendzie i uruchamianie strony po HTTP.
