@@ -42,18 +42,39 @@ public class SecurityConfiguration {
         return http.build();
     }
 
+//    @Bean("corsFilter")
+//    CorsFilter corsConfigurationSource() {
+//        CorsConfiguration configuration = new CorsConfiguration();
+//        configuration.setAllowCredentials(true);
+//
+//        configuration.setAllowedOrigins(List.of("http://backend:4200", "http://localhost:4200"));
+//        configuration.setAllowedMethods(List.of("GET", "POST", "PATCH", "OPTIONS"));
+//        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+//
+//        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+//        source.registerCorsConfiguration("/**", configuration);
+//
+//        return new CorsFilter(source);
+//    }
     @Bean("corsFilter")
     CorsFilter corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.setAllowCredentials(true);
 
-        configuration.setAllowedOrigins(List.of("http://backend:4200", "http://localhost:4200"));
-        configuration.setAllowedMethods(List.of("GET", "POST", "PATCH", "OPTIONS"));
-        configuration.setAllowedHeaders(List.of("Authorization", "Content-Type"));
+        // Allow all origins
+        configuration.addAllowedOriginPattern("*"); // Use addAllowedOriginPattern for wildcard matching in modern Spring versions
 
+        // Allow all methods
+        configuration.setAllowedMethods(List.of("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
+
+        // Allow all headers
+        configuration.setAllowedHeaders(List.of("*"));
+
+        // Configure URL patterns
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
 
         return new CorsFilter(source);
     }
+
 }
