@@ -16,9 +16,10 @@ pipeline {
                     echo "PATH: $PATH"
                     which aws
                     aws --version
+                    aws ecr get-login-password --region us-east-1
                 '''
                 sh 'aws cli login test----'
-                sh 'aws ecr get-login-password --region us-east-1 '
+                sh 'aws ecr get-login-password --region us-east-1  '
             }
         }
 
