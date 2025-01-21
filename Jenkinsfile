@@ -5,18 +5,14 @@ pipeline {
         ECR_REPO_NAME = "REPO"
         REPO_OWNER="pwr-twwo"
         REPO_NAME="lab10-grupa11-6" 
+        TASK_FAMILY="app-task"
+        CLUSTER_NAME = "devops-cluster"
+        SERVICE_NAME = "app-service"
     }
     stages {
         stage('Build stage') {
             agent { label 'BUILD' }
             steps {
-                sh 'echo "${AWS_DEFAULT_REGION}"'
-                sh 'pwd'
-                
-                sh 'sudo docker images'
-
-                sh 'echo global ENV test: ${GITHUB_TOKEN} '
-
                 sh '''
                     aws --version
                     aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_REPO_USER_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com
@@ -49,7 +45,32 @@ pipeline {
         stage("Deploy stage"){
             agent { label 'Controller' } 
             steps {
-                sh 'echo "adresURL:${ECR_REPO_NAME}" '
+                sh '''
+                echo "Creating new task definition revision..."
+                cat <<EOF > container-definitions.json
+                [
+                  {
+                    "name": "ci-cd container",
+                    "image": "${AWS_REPO_USER_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${AWS_REPO_NAME}:latest",
+                    "memory": 3072,
+                    "cpu": 1024,
+                    "essential": true
+                  }
+                ]
+                EOF
+                
+                aws ecs register-task-definition \
+                    --family ${TASK_FAMILY} \
+                    --container-definitions file://container-definitions.json
+                '''
+
+                sh '''
+                echo "Updating ECS service to use new task definition..."
+                aws ecs update-service \
+                    --cluster ${CLUSTER_NAME} \
+                    --service ${SERVICE_NAME} \
+                    --task-definition ${TASK_FAMILY}
+                '''
             }
         }
     }
