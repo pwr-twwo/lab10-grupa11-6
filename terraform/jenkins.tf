@@ -10,7 +10,9 @@ resource "aws_instance" "jenkins" {
   #security_groups = [aws_security_group.jenkins_sg.name]
   vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
 
-  iam_instance_profile = data.aws_iam_role.ec2_role
+
+  #iam_instance_profile = data.aws_iam_instance_profile.ec2_profile.id
+  iam_instance_profile   = "LabInstanceProfile"
 
   subnet_id = aws_subnet.ci_cd_subnet_2.id
 
@@ -19,8 +21,7 @@ resource "aws_instance" "jenkins" {
   user_data = <<-EOF
     #!/bin/bash
     sudo apt update -y
-    sudo apt install -y openjdk-17-jdk jq
-
+    sudo apt install -y openjdk-17-jdk jq unizp curl
 
     # Install AWS CLI 
     curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
@@ -28,12 +29,11 @@ resource "aws_instance" "jenkins" {
     sudo ./aws/install --update
     rm -rf awscliv2.zip aws
 
-    echo "AWS CLI version"
-    aws --version
+    #sudo snap install aws-cli --classic
 
-    # JENKINS
-    sudo wget -q -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io.key
-    echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc] https://pkg.jenkins.io/debian-stable binary/" | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
+    # Jenkins
+    sudo wget -O /usr/share/keyrings/jenkins-keyring.asc https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key
+    echo "deb [signed-by=/usr/share/keyrings/jenkins-keyring.asc]" https://pkg.jenkins.io/debian-stable binary/ | sudo tee /etc/apt/sources.list.d/jenkins.list > /dev/null
     sudo apt update -y
 
     sudo apt install -y jenkins
@@ -59,13 +59,14 @@ resource "aws_instance" "jenkins" {
 # ------------------------------------------------------------------------------
 
 
-data "aws_iam_role" "ec2_role" {
+data "aws_iam_instance_profile" "ec2_profile" {
   name = "LabInstanceProfile"
 }
 
-output "ec2_role" {
-  value = data.aws_iam_role.ec2_role.arn
+output "ec2_profile" {
+  value = data.aws_iam_instance_profile.ec2_profile
 }
+
 
 
 # ----------------------------------------------------

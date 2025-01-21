@@ -10,6 +10,9 @@ resource "aws_instance" "build_node" {
   vpc_security_group_ids = [aws_security_group.jenkins_sg.id]
   subnet_id = aws_subnet.ci_cd_subnet_1.id
 
+  #iam_instance_profile = data.aws_iam_instance_profile.ec2_profile.id
+  iam_instance_profile   = "LabInstanceProfile"
+
   user_data = <<-EOF
     #!/bin/bash
     sudo apt update -y
