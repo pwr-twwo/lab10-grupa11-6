@@ -9,6 +9,7 @@ Instrukcja użycia:
 
 
 
+
 Uwagi:
 Przy tworzeniu node dla maszyny budującej w Jenkins wybraliśmy
 Host Key Verification Strategy = Non verifying Verification Strategy
