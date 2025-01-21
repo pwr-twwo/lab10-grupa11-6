@@ -72,3 +72,6 @@ resource "aws_key_pair" "jenkins_key" {
   key_name   = "jenkins-key"
   public_key = tls_private_key.example.public_key_openssh
 }
+```
+## 3. Hostowanie statycznego frontendu na S3Bucket
+Problemem było połączenie się ze strony hostowanej na S3Bucket do naszego backendu, który obsługiwał tylko HTTP.
