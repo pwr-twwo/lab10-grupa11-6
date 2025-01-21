@@ -26,7 +26,7 @@ resource "aws_lb_target_group" "be_target_group" {
   target_type               = "ip"
   vpc_id                    = aws_vpc.ci_cd_vpc.id
   health_check {
-      path                  = "/health"
+      path                  = "/actuator/health"
       protocol              = "HTTP"
       matcher               = "200"
       port                  = "traffic-port"
