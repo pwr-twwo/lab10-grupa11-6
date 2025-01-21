@@ -21,7 +21,16 @@ pipeline {
                 sh '''
                     git clone https://${GITHUB_TOKEN}@github.com/$REPO_OWNER/$REPO_NAME.git
                     echo "cloned"
+                    ls
                     '''
+                sh """
+                    cd ./lab10-grupa11-6/be
+                    docker build -t kino_image .
+                    docker images
+                    docker tag kino_image:latest ${AWS_REPO_USER_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${AWS_REPO_NAME}:latest
+                    docker push ${AWS_REPO_USER_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${AWS_REPO_NAME}:latest
+                    echo "image pushed"
+                    """
             }
         }
 
