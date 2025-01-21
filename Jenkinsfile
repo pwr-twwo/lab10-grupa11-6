@@ -14,7 +14,7 @@ pipeline {
         }
 
         stage("Deploy stage"){
-            agent { label 'Built-In Node' } 
+            agent { label 'Controller' } 
             steps {
                 sh 'echo "adresURL:${REPO_NAME}" '
             }
