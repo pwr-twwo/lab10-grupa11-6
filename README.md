@@ -1,6 +1,6 @@
 # Instrukcja Użycia
 
-## 1. Utwórz instancję ECR
+### 1. Utwórz instancję ECR
 Rozpocznij od utworzenia Amazon Elastic Container Registry (ECR), które będzie przechowywało obrazy Docker.
 
 
