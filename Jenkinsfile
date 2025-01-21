@@ -9,14 +9,16 @@ pipeline {
             agent { label 'BUILD' }
             steps {
                 sh 'echo "${REGION}"'
-                sh 'echo "test"'
+                sh 'pwd'
+                sh 'sudo docker images'
+                sh 'echo global ENV test: ${GITHUB_TOKEN} '
             }
         }
 
         stage("Deploy stage"){
             agent { label 'Controller' } 
             steps {
-                sh 'echo "adresURL:${REPO_NAME}" '
+                sh 'echo "adresURL:${ECR_REPO_NAME}" '
             }
         }
     }
