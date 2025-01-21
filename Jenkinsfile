@@ -57,20 +57,22 @@ pipeline {
 
                 sh 'cat current-task-definition.json'
 
+
                 sh '''
-                echo "Updating image in task definition..."
-
-                jq '.taskDefinition.containerDefinitions[0].image = "${AWS_REPO_USER_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${AWS_REPO_NAME}:latest"' \
-                    current-task-definition.json > new-task-definition.json
-
-                echo "Registering new task definition..."
-                aws ecs register-task-definition \
-                    --family ${TASK_FAMILY} \
-                    --cli-input-json file://new-task-definition.json
+                echo "Updating task definition..."
+                jq '.taskDefinition
+                   | .containerDefinitions[0].image = "${AWS_REPO_USER_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${AWS_REPO_NAME}:latest"
+                   | del(.taskDefinitionArn)' \
+                   current-task-definition.json > new-task-definition.json
                 '''
+
                 sh 'cat new-task-definition.json'
 
-
+                sh '''
+                echo "Registering new task definition..."
+                aws ecs register-task-definition \
+                    --cli-input-json file://new-task-definition.json
+                '''
             }
         }
     }
