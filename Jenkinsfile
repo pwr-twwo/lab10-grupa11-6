@@ -47,32 +47,11 @@ pipeline {
             agent { label 'Controller' } 
             steps {
 
-                sh '''
-                    ls
-                    aws ecs describe-task-definition \
-                    --task-definition ${TASK_FAMILY} \
-                    > current-task-definition.json
-                    ls
-                '''
-
-                sh 'cat current-task-definition.json'
-
-
-                sh '''
-                echo "Updating task definition..."
-                jq '.taskDefinition
-                   | .containerDefinitions[0].image = "${AWS_REPO_USER_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com/${AWS_REPO_NAME}:latest"
-                   | del(.taskDefinitionArn)' \
-                   current-task-definition.json > new-task-definition.json
-                '''
-
-                sh 'cat new-task-definition.json'
-
-                sh '''
-                echo "Registering new task definition..."
-                aws ecs register-task-definition \
-                    --cli-input-json file://new-task-definition.json
-                '''
+                sh "aws ecs update-service \
+                --cluster ${CLUSTER_NAME} \
+                --service ${SERVICE_NAME} \
+                --force-new-deployment"
+                
             }
         }
     }
