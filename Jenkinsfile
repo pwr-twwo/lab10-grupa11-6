@@ -13,7 +13,8 @@ pipeline {
                 sh 'sudo docker images'
                 sh 'echo global ENV test: ${GITHUB_TOKEN} '
                 sh 'aws cli login test:'
-                sh 'aws ecr get-login-password --region us-east-1'
+                sh 'aws --version'
+                sh 'echo "aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 299785226384.dkr.ecr.us-east-1.amazonaws.com"'
             }
         }
 
