@@ -19,7 +19,10 @@ public class MoviesController {
 
     @GetMapping("/movies/")
     public List<MovieTO> findAll() {
-        return moviesService.findAll();
+        return moviesService.findAll().stream()
+                .limit(3)
+                .collect(Collectors.toList());
+        ;
     }
 
     @GetMapping("/movies/{id}")
